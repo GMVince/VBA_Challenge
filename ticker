@@ -1,0 +1,95 @@
+Sub Ticker()
+For Each WS In Worksheets
+    Dim WorksheetName As String
+    
+    WorksheetName = WS.Name
+    
+    Dim Ticker As String
+
+    Dim YearlyChange As Double
+
+    Dim PercentChange As Double
+
+    Dim Total_Stock_Volume As Integer
+
+    Dim TicketCount As Integer
+
+    TicketCount = 2
+
+    Total_Stock_Volume = 0
+    
+    Dim i As Long
+    Dim j As Long
+    
+        j = 2
+            lastrowA = WS.Cells(Rows.Count, 1).End(xlUp).Row
+
+    For i = 2 To lastrowA
+        If Cells(i + 1, 1).Value <> WS.Cells(i, 1).Value Then
+        
+        Ticker = Cells(i, 1).Value
+        
+        WS.Cells(TicketCount, 9).Value = WS.Cells(i, 1).Value
+        
+        'yearly change calc closing - opening price
+        WS.Cells(TicketCount, 10).Value = WS.Cells(i, 6).Value - WS.Cells(j, 3).Value
+            
+            'formating conditional
+            If WS.Cells(TicketCount, 10).Value < 0 Then
+            
+            'red
+            WS.Cells(TicketCount, 10).Interior.ColorIndex = 3
+            
+            Else
+            
+            'green
+            WS.Cells(TicketCount, 10).Interior.ColorIndex = 4
+            
+            End If
+            
+            'percent calc
+            If WS.Cells(j, 3).Value <> 0 Then
+            
+            PercentChange = ((WS.Cells(i, 6).Value - WS.Cells(j, 3).Value) / WS.Cells(j, 3).Value)
+            WS.Cells(TicketCount, 11).Value = Format(PercentChange, "Percent")
+            
+            Else
+            
+            WS.Cells(TicketCount, 11).Value = Format(0, "Percent")
+            
+            End If
+            
+        'total volume
+        WS.Cells(TicketCount, 12).Value = WorksheetFunction.Sum(Range(WS.Cells(j, 7), WS.Cells(i, 7)))
+        
+        TickCount = TickCount + 1
+        
+        Range("I" & TicketCount).Value = Ticker
+        
+        Range("M" & TicketCount).Value = Total_Stock_Volume
+        
+        TicketCount = TicketCount + 1
+        
+       j = i + 1
+                
+                End If
+            
+            Next i
+        
+      LastRowI = WS.Cells(Rows.Count, 9).End(xlUp).Row
+        
+    WS.Range("I1:L1").Value = Array("Ticker", "Yearly Change", "Percent Change", "Total Stock Volume")
+    WS.Range("P2:P4").Value = Array("Greatest % Increase", "Greatest % Decrease", "Greatest Ttl Volume")
+      Next WS
+  
+
+
+For Each WS In ActiveWorkbook.Worksheets
+    WS.Columns.AutoFit
+    
+
+
+
+   Next WS
+   
+End Sub
